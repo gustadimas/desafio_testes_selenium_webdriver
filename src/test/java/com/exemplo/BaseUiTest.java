@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -28,6 +29,7 @@ abstract class BaseUiTest {
         configureTimeouts(driver);
         wait = new WebDriverWait(driver, EXPLICIT_WAIT_TIMEOUT);
         driver.get(getBaseUrl());
+        waitForPageReady();
     }
 
     @AfterEach
@@ -43,6 +45,12 @@ abstract class BaseUiTest {
 
     WebElement waitUntilClickable(By locator) {
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    void waitForPageReady() {
+        wait.until(currentDriver -> "complete".equals(
+                ((JavascriptExecutor) currentDriver).executeScript("return document.readyState")
+        ));
     }
 
     WebDriver createDriver() {
